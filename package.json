@@ -17,6 +17,7 @@
   , "devDependencies": {
         "mocha": "*"
       , "expect": "*"
+      , "express": "*"
       , "superagent": "*"
     }
 }
