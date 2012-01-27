@@ -10,6 +10,7 @@ Make sure you structure your code so that your `http` server lives in a
 separate module that can be `require`d.
 
 **server.js**
+
 ```js
 module.exports = http.Server(function (req, res) {
   res.writeHead(200);
@@ -20,7 +21,7 @@ module.exports = http.Server(function (req, res) {
 #### A) CLI
 
 ```bash
-up -p 3000 server.js
+up server.js
 ```
 
 `up` right now accepts three options:
