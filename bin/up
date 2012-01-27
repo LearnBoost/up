@@ -1,0 +1,230 @@
+#!/usr/bin/env node
+
+/**
+ * Force debug.
+ */
+
+process.env.DEBUG = (process.env.DEBUG ? ',' : '') + 'up,up-cli';
+
+/**
+ * Module dependencies.
+ */
+
+var up = require('../up')
+  , spawn = require('child_process').spawn
+  , program = require('commander')
+  , http = require('http')
+  , path = require('path')
+  , os = require('os')
+  , eq = require('eq')
+  , ms = require('ms')
+  , fs = require('fs')
+  , debug = require('debug')('up-cli')
+
+/**
+ * Number of CPUs available.
+ */
+
+var cpus = require('os').cpus().length;
+
+/**
+ * Set up CLI.
+ */
+
+program
+  .version(up.version)
+  .usage('[options] <file>')
+  .option('-p, --port [port]', 'Port to listen on.', 3000)
+  .option('-w, --watch', 'Watch the module directory for changes.')
+  .option('-r, --require [file]', 'Module to require from each worker.')
+  .option('-n, --number [workers]', 'Number of workers to spawn.'
+    , 'development' == process.env.NODE_ENV ? 1 : cpus)
+  .option('-t, --timeout [ms]', 'Worker timeout.', '10ms')
+
+/**
+ * Capture requires.
+ */
+
+var requires = [];
+
+program.on('require', function (file) {
+  requires.push(file);
+});
+
+/**
+ * Parse argv.
+ */
+
+program.parse(process.argv);
+
+/**
+ * Helper function to exit with an error.
+ *
+ * @api private
+ */
+
+function error () {
+  console.error.apply(console, arguments);
+  process.exit(1);
+};
+
+/**
+ * Parse module.
+ */
+
+var file = program.args[0]
+  , server
+
+// verify a file is supplied
+if (!file) error(program.helpInformation());
+
+// absolutize
+if ('/' != file[0]) file = process.cwd() + '/' + file;
+
+// verify we can require
+try {
+  server = require(file);
+} catch (e) {
+  error('\n  Error requiring supplied module "%s".\n  %s\n'
+    , file, e.stack);
+}
+
+// verify it's a valid server
+if (!(server instanceof http.Server)) {
+  error('\n  Module supplied "%s" does not export a valid `http.Server`.\n'
+    , file);
+}
+
+/**
+ * Parse port
+ */
+
+var port;
+
+if (null != program.port) {
+  port = Number(program.port);
+
+  if (!port || isNaN(port)) {
+    error('\n  Invalid port "%s" (%d).\n', program.port, program.port);
+  }
+}
+
+/**
+ * Parse number of workers.
+ */
+
+var numWorkers = eq(program.number, { cpus: cpus });
+
+if (!numWorkers || isNaN(numWorkers)) {
+  error('\n  Supplied number of workers "%s" (%s) is invalid.\n'
+    , program.number, numWorkers);
+}
+
+/**
+ * Parse timouet
+ */
+
+var workerTimeout = ms(program.timeout);
+
+if (isNaN(workerTimeout)) {
+  error('\n  Supplied worker timeout "%s" (%s) is invalid.\n'
+    , program.timeout, workerTimeout);
+}
+
+/**
+ * Start!
+ */
+
+debug('starting cluster with %d workers on port %d', numWorkers, port);
+debug('`\033[97mkill -s SIGUSR2 %d\033[90m` to load new code', process.pid);
+
+var httpServer = http.Server().listen(program.port)
+  , srv = up(httpServer, file, {
+        numWorkers: numWorkers
+      , workerTimeout: workerTimeout
+      , requires: requires
+    })
+
+/**
+ * Listen on SIGUSR2 signal.
+ */
+
+process.on('SIGUSR2', function () {
+  debug('\033[97mSIGUSR2\033[90m signal detected - reloading');
+  srv.reload();
+});
+
+/**
+ * Watch.
+ */
+
+if (undefined != program.watch) {
+  // from mocha/utils - released under MIT - copyright TJ Holowaychuk
+
+  /**
+   * Ignored directories.
+   */
+
+  var ignore = ['node_modules', '.git'];
+
+  /**
+   * Ignored files.
+   */
+
+  function ignored (path) {
+    return !~ignore.indexOf(path);
+  };
+
+  /**
+   * Lookup files in the given `dir`.
+   *
+   * @return {Array}
+   * @api public
+   */
+
+  function files (dir, ret) {
+    ret = ret || [];
+
+    fs.readdirSync(dir)
+      .filter(ignored)
+      .forEach(function(p){
+        p = path.join(dir, p);
+        if (fs.statSync(p).isDirectory()) {
+          files(p, ret);
+        } else if (p.match(/\.js$/)) {
+          ret.push(p);
+        }
+      });
+
+    return ret;
+  };
+
+  /**
+   * Watch the given `files` for changes
+   * and invoke `fn(file)` on modification.
+   *
+   * @param {Array} files
+   * @param {Function} fn
+   * @api private
+   */
+
+  function watch (files, fn){
+    var options = { interval: 100 };
+    files.forEach(function (file) {
+      fs.watchFile(file, options, function (curr, prev) {
+        if (prev.mtime < curr.mtime) fn(file);
+      });
+    });
+  };
+
+  /**
+   * Watch files in the path of script to run.
+   */
+
+  debug('watching "%s" for changes', watchDir);
+
+  watch(files(process.cwd()), function (file) {
+    debug('\033[97m%s\033[90m change detected - reloading', file);
+    srv.reload();
+  });
+}
