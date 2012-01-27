@@ -35,9 +35,7 @@ To get the `up` command, make sure to install with the `-g` flag:
 $ npm install -g up
 ```
 
-```
-  Usage: up [options] <file>
-```
+**Usage: up [options] <file>**
 
 The `up` command accepts the following options:
 
