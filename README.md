@@ -29,6 +29,12 @@ module.exports = http.Server(function (req, res) {
 
 #### A) CLI
 
+To get the `up` command, make sure to install with the `-g` flag:
+
+```bash
+$ npm install -g up
+```
+
 ```
   Usage: up [options] <file>
 ```
