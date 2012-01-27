@@ -10,7 +10,7 @@ process.env.DEBUG = (process.env.DEBUG ? ',' : '') + 'up,up-cli';
  * Module dependencies.
  */
 
-var up = require('../up')
+var up = require('../lib/up')
   , spawn = require('child_process').spawn
   , program = require('commander')
   , http = require('http')
