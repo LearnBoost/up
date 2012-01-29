@@ -221,7 +221,7 @@ if (undefined != program.watch) {
    * Watch files in the path of script to run.
    */
 
-  debug('watching "%s" for changes', watchDir);
+  debug('watching "%s" for changes', process.cwd());
 
   watch(files(process.cwd()), function (file) {
     debug('\033[97m%s\033[90m change detected - reloading', file);
