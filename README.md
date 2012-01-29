@@ -129,9 +129,13 @@ to the number of CPUs.
 2. When a reload instruction is received, it spawns an identical number of
 workers.
 3. Upon the first of those workers binding to a port, any subsequent
-requests are sent to that worker, and all the ones containing old code are
-discarded.
-4. As other workers bind and become available, they join the round-robin
+**requests** are sent to that worker, and all the workers containing old
+code are discarded.
+4. The discarded workers could have been processing requests, so they only
+truly die after the configured `workerTimeout`, which defaults to 10
+minutes in production. This means that if a user was uploading a file, his
+request will be processed without interruptions.
+5. As other workers bind and become available, they join the round-robin
 round.
 
 ## Credits
