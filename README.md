@@ -67,13 +67,13 @@ The `up` command accepts the following options:
     [eq.js](https://gist.github.com/1590954).
   - You can optionally use the `cpus` variable. eg: `cpus + 2`.
   - You can use all the `Math` methods. eg: `round(cpus / 2)`.
-  - Defaults to `1` in development, number of CPUs otherwise.
+  - Defaults to number of CPUS, or `1` if `NODE_ENV` is `development`.
 
 - `-t`/`--timeout`
 
   - number of ms after which a worker is killed once it becomes inactive.
   - Strings like `'10s'` are accepted.
-  - Defaults to `'10m'` in JS, `'500ms'` in CLI.
+  - Defaults to `'10m'`, or `'500ms'` if `NODE_ENV` is `development`.
 
 ### B) JavaScript API
 
