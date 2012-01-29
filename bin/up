@@ -39,7 +39,7 @@ program
   .option('-r, --require [file]', 'Module to require from each worker.')
   .option('-n, --number [workers]', 'Number of workers to spawn.'
     , 'development' == process.env.NODE_ENV ? 1 : cpus)
-  .option('-t, --timeout [ms]', 'Worker timeout.', '500ms')
+  .option('-t, --timeout [ms]', 'Worker timeout.')
 
 /**
  * Capture requires.
@@ -124,11 +124,11 @@ if (!numWorkers || isNaN(numWorkers)) {
  * Parse timouet
  */
 
-var workerTimeout = ms(program.timeout);
+var workerTimeout = program.timeout;
 
-if (isNaN(workerTimeout)) {
+if (isNaN(ms(workerTimeout))) {
   error('\n  Supplied worker timeout "%s" (%s) is invalid.\n'
-    , program.timeout, workerTimeout);
+    , program.timeout, ms(workerTimeout));
 }
 
 /**
