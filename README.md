@@ -73,7 +73,7 @@ The `up` command accepts the following options:
 
   - number of ms after which a worker is killed once it becomes inactive.
   - Strings like `'10s'` are accepted.
-  - Defaults to `'10m'`.
+  - Defaults to `'10m'` in JS, `'500ms'` in CLI.
 
 ### B) JavaScript API
 

@@ -39,7 +39,7 @@ program
   .option('-r, --require [file]', 'Module to require from each worker.')
   .option('-n, --number [workers]', 'Number of workers to spawn.'
     , 'development' == process.env.NODE_ENV ? 1 : cpus)
-  .option('-t, --timeout [ms]', 'Worker timeout.', '10ms')
+  .option('-t, --timeout [ms]', 'Worker timeout.', '500ms')
 
 /**
  * Capture requires.
