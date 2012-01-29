@@ -60,7 +60,7 @@ describe('up', function () {
 
       srv.on('spawn', function () {
         // count workers
-        if (2 != srv.ports.length) return;
+        if (2 != srv.workers.length) return;
 
         request.get('http://localhost:6001', function (res) {
           var pid1 = res.body.pid;
@@ -91,7 +91,7 @@ describe('up', function () {
       , srv = up(httpServer, __dirname + '/server', { numWorkers: 2 })
 
     srv.once('spawn', function () {
-      expect(srv.ports).to.have.length(1);
+      expect(srv.workers).to.have.length(1);
       srv.destroy();
       done();
     });
@@ -109,7 +109,7 @@ describe('up', function () {
 
       function onSpawn () {
         // count workers
-        if (2 == srv.ports.length) {
+        if (2 == srv.workers.length) {
           // prevent race conditions with reload spawn events
           srv.removeListener('spawn', onSpawn);
         } else {
