@@ -1,5 +1,5 @@
 
-## Up
+# Up
 
 Zero-downtime reloads built on top of the
 [distribute](http://github.com/learnboost/distribute) load balancer.
@@ -13,7 +13,14 @@ $ up --port 80 --watch my-http-server.js
 Will start `my-http-server.js` on port 80, then reload it with no downtime
 when files change in the working directory.
 
-### Setup
+## Features
+
+- Works with Node 0.6+
+- Compatible with any HTTP server
+- Easy-to-use CLI interface for development
+- Gracefully handles reloads with syntax errors during development
+
+## Setup
 
 Make sure you structure your code so that your `http` server lives in a
 separate module that can be `require`d.
@@ -27,7 +34,7 @@ module.exports = http.Server(function (req, res) {
 });
 ```
 
-#### A) CLI
+### A) CLI
 
 To get the `up` command, make sure to install with the `-g` flag:
 
@@ -68,7 +75,7 @@ The `up` command accepts the following options:
   - Strings like `'10s'` are accepted.
   - Defaults to `'10m'`.
 
-#### B) JavaScript API
+### B) JavaScript API
 
 ```js
 var up = require('up')
@@ -91,7 +98,7 @@ parameters:
   - `numWorkers`: (`Number`|`String`): see `--workers` above.
   - `workerTimeout`: (`Number`|`String`): see `--timeout` above.
 
-### Middleware
+## Middleware
 
 An `UpServer` inherits from a `Distributor`, which means you can `use()`
 any [distribute](http://github.com/learnboost/distribute) middleware.
@@ -100,7 +107,7 @@ The main difference is that the "default handler" of up (ie: the last
 function in the middleware chain) is the one that executes the
 round-robin load balancing.
 
-### Reloading
+## Reloading
 
 To reload the workers, call `srv.reload()`. In the example above and CLI,
 this is called by sending the `SIGUSR2` signal:
@@ -115,7 +122,7 @@ convenience.
 The CLI tool also auto-reloads if you pass the `--watch` option and a file
 changes in the working directory.
 
-#### Strategy
+### Strategy
 
 An up server starts with an arbitrary number of workers, which defaults to
 the number of CPUs times two.
@@ -130,7 +137,7 @@ discarded.
 As other workers bind and become available, they join the round-robin
 round.
 
-### Credits
+## Credits
 
 (The MIT License)
 
