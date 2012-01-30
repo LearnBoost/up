@@ -126,7 +126,7 @@ if (!numWorkers || isNaN(numWorkers)) {
 
 var workerTimeout = program.timeout;
 
-if (isNaN(ms(workerTimeout))) {
+if (null != workerTimeout && isNaN(ms(workerTimeout))) {
   error('\n  Supplied worker timeout "%s" (%s) is invalid.\n'
     , program.timeout, ms(workerTimeout));
 }
