@@ -1,4 +1,10 @@
 
+0.1.2 / 2012-01-31
+==================
+
+  * Added: commit suicide when master is down. [tj]
+  * Fixed; pass along env to workers. Closes #6. [tj]
+
 0.1.1 / 2012-01-30
 ==================
 

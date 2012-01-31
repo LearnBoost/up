@@ -16,9 +16,13 @@ when files change in the working directory.
 ## Features
 
 - Works with Node 0.6+
-- Compatible with any HTTP server
-- Easy-to-use CLI interface for development
-- Gracefully handles reloads with syntax errors during development
+- Works at the HTTP request level. It never drops requests or destroys
+  `Keep-Alive` sockets while reloading.
+- Compatible with any HTTP server.
+- Easy-to-use CLI interface for development with automatic reloading
+  upon file changes.
+- Gracefully handles reloads with syntax errors during development.
+- Built on [distribute](http://github.com/learnboost/distribute).
 
 ## Setup
 

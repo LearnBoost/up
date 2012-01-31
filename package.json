@@ -3,7 +3,7 @@
   , "description": "Zero downtime reloads for Node HTTP(S) servers."
   , "tags": ["cluster", "reload", "process", "monitor", "graceful", "restart"]
   , "homepage": "https://github.com/learnboost/up"
-  , "version": "0.1.1"
+  , "version": "0.1.2"
   , "bin": { "up": "./bin/up" }
   , "main": "./lib/up"
   , "engines": { "node": ">= 0.6.0" }
