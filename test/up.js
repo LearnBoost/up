@@ -4,25 +4,12 @@
  */
 
 var up = require('../lib/up')
+  , net = require('net')
   , http = require('http')
   , expect = require('expect.js')
   , request = require('superagent')
+  , child_process = require('child_process')
   , Distributor = require('distribute')
-
-/**
- * Add helper to kill all processes.
- */
-
-up.prototype.destroy = function () {
-  for (var i in this.procs) {
-    this.procs[i].kill('SIGHUP');
-  };
-
-  if (!this.destroyed) {
-    this.on('spawn', this.destroy.bind(this));
-    this.destroyed = true;
-  }
-}
 
 /**
  * Suite.
@@ -33,7 +20,6 @@ describe('up', function () {
   it('should be a distributor', function () {
     var srv = up(http.Server(), __dirname + '/server')
     expect(srv).to.be.a(Distributor);
-    srv.destroy();
   });
 
   it('should load the workers', function (done) {
@@ -45,7 +31,6 @@ describe('up', function () {
       request.get('http://localhost:6000', function (res) {
         var pid = res.body.pid;
         expect(pid).to.be.a('number');
-        srv.destroy();
         done();
       });
     }
@@ -76,7 +61,6 @@ describe('up', function () {
 
               request.get('http://localhost:6001', function (res) {
                 expect(res.body.pid).to.equal(pid2);
-                srv.destroy();
                 done();
               });
             });
@@ -92,7 +76,6 @@ describe('up', function () {
 
     srv.once('spawn', function () {
       expect(srv.workers).to.have.length(1);
-      srv.destroy();
       done();
     });
   });
@@ -142,7 +125,6 @@ describe('up', function () {
                     expect(res.body.pid).to.not.equal(pid1);
                     expect(res.body.pid).to.not.equal(pid2);
                     expect(reloadFired).to.be(true);
-                    srv.destroy();
                     done();
                   });
                 });
@@ -151,6 +133,44 @@ describe('up', function () {
           });
         });
       }
+    }
+  });
+
+  it('should suicide workers if master dies', function (done) {
+    // utility to check whether a pid is alive
+    // https://raw.github.com/visionmedia/monit.js/master/lib/utils.js
+    function alive (pid) {
+      try {
+        process.kill(pid, 0);
+        return true;
+      } catch (err) {
+        return false;
+      }
+    };
+
+    var proc;
+
+    // the spawn process will start an up server with 1 worker and
+    // will send us the pid over a net channel
+    net.createServer(function (conn) {
+      conn.setEncoding('utf8');
+      conn.on('data', function (pid) {
+        expect(alive(pid)).to.be(true);
+
+        // kill master
+        proc.kill('SIGHUP');
+
+        // since the ping interval is set to 15ms, we try in 30
+        setTimeout(function () {
+          expect(alive(pid)).to.be(false);
+          done();
+        }, 30);
+      });
+    }).listen(6003, onListen);
+
+    function onListen () {
+      // create a child process (master) we'll kill later
+      proc = child_process.spawn('node', [__dirname + '/child.js']);
     }
   });
 
