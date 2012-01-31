@@ -4,25 +4,12 @@
  */
 
 var up = require('../lib/up')
+  , net = require('net')
   , http = require('http')
   , expect = require('expect.js')
   , request = require('superagent')
+  , child_process = require('child_process')
   , Distributor = require('distribute')
-
-/**
- * Add helper to kill all processes.
- */
-
-up.prototype.destroy = function () {
-  for (var i in this.procs) {
-    this.procs[i].kill('SIGHUP');
-  };
-
-  if (!this.destroyed) {
-    this.on('spawn', this.destroy.bind(this));
-    this.destroyed = true;
-  }
-}
 
 /**
  * Suite.
@@ -33,7 +20,6 @@ describe('up', function () {
   it('should be a distributor', function () {
     var srv = up(http.Server(), __dirname + '/server')
     expect(srv).to.be.a(Distributor);
-    srv.destroy();
   });
 
   it('should load the workers', function (done) {
@@ -45,7 +31,6 @@ describe('up', function () {
       request.get('http://localhost:6000', function (res) {
         var pid = res.body.pid;
         expect(pid).to.be.a('number');
-        srv.destroy();
         done();
       });
     }
@@ -76,7 +61,6 @@ describe('up', function () {
 
               request.get('http://localhost:6001', function (res) {
                 expect(res.body.pid).to.equal(pid2);
-                srv.destroy();
                 done();
               });
             });
@@ -92,7 +76,6 @@ describe('up', function () {
 
     srv.once('spawn', function () {
       expect(srv.workers).to.have.length(1);
-      srv.destroy();
       done();
     });
   });
@@ -142,7 +125,6 @@ describe('up', function () {
                     expect(res.body.pid).to.not.equal(pid1);
                     expect(res.body.pid).to.not.equal(pid2);
                     expect(reloadFired).to.be(true);
-                    srv.destroy();
                     done();
                   });
                 });
