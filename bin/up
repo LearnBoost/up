@@ -34,11 +34,11 @@ var cpus = require('os').cpus().length;
 program
   .version(up.version)
   .usage('[options] <file>')
-  .option('-p, --port [port]', 'Port to listen on.', 3000)
-  .option('-f, --pidfile [pidfile]', 'Write port to pidfile')
+  .option('-p, --port <port>', 'Port to listen on.', 3000)
+  .option('-f, --pidfile <pidfile>', 'Write port to pidfile')
   .option('-w, --watch', 'Watch the module directory for changes.')
-  .option('-r, --require [file]', 'Module to require from each worker.')
-  .option('-n, --number [workers]', 'Number of workers to spawn.'
+  .option('-r, --require <file>', 'Module to require from each worker.')
+  .option('-n, --number <workers>', 'Number of workers to spawn.'
     , 'development' == process.env.NODE_ENV ? 1 : cpus)
   .option('-t, --timeout [ms]', 'Worker timeout.')
 
