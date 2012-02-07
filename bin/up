@@ -153,8 +153,6 @@ if (program.pidfile) {
   fs.writeFile(program.pidfile, process.pid, function(err) {
     if (err) {
       error('\n  Error writing pidfile: "%s"\n', program.pidfile, err);
-    } else {
-      debug('`\033[97mkill -s SIGUSR2 `cat %s`\033[90m` to restart', program.pidfile);
     }
   });
 }
