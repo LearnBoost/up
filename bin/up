@@ -15,6 +15,7 @@ var up = require('../lib/up')
   , program = require('commander')
   , http = require('http')
   , path = require('path')
+  , tty = require('tty')
   , os = require('os')
   , eq = require('eq')
   , ms = require('ms')
@@ -136,7 +137,8 @@ if (null != workerTimeout && isNaN(ms(workerTimeout))) {
  */
 
 debug('starting cluster with %d workers on port %d', numWorkers, port);
-debug('`\033[97mkill -s SIGUSR2 %d\033[90m` to load new code', process.pid);
+debug('`\033[97mkill -s SIGUSR2 %d\033[90m` or \033[97mctrl + r\033[90m'
+  + ' to load new code', process.pid);
 
 var httpServer = http.Server().listen(program.port)
   , srv = up(httpServer, file, {
@@ -152,6 +154,27 @@ var httpServer = http.Server().listen(program.port)
 process.on('SIGUSR2', function () {
   debug('\033[97mSIGUSR2\033[90m signal detected - reloading');
   srv.reload();
+});
+
+/**
+ * Listen on control+r
+ */
+
+process.stdin.resume();
+tty.setRawMode(true);
+process.stdin.on('keypress', function (char, key) {
+  if (key.ctrl) {
+    switch (key.name) {
+      case 'c':
+        process.exit();
+        break;
+
+      case 'r':
+        debug('\033[97mctrl + r\033[90m detected - reloading');
+        srv.reload();
+        break;
+    }
+  }
 });
 
 /**
