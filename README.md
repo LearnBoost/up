@@ -79,6 +79,11 @@ The `up` command accepts the following options:
   - Strings like `'10s'` are accepted.
   - Defaults to `'10m'`, or `'500ms'` if `NODE_ENV` is `development`.
 
+- `-f`/`--pidfile`
+
+  - a filename to write the pid to
+  - If specified, restarts can be achieved with: "kill -s SIGUSR2 `cat pidfile.txt`"
+
 ### B) JavaScript API
 
 ```js
