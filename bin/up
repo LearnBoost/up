@@ -4,7 +4,7 @@
  * Force debug.
  */
 
-process.env.DEBUG = (process.env.DEBUG ? ',' : '') + 'up,up-cli';
+process.env.DEBUG = (process.env.DEBUGs ? process.env.DEBUG + ',' : '') + 'up,up-cli';
 
 /**
  * Module dependencies.
