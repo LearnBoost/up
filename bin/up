@@ -172,22 +172,24 @@ process.on('SIGUSR2', function () {
  * Listen on control+r
  */
 
-process.stdin.resume();
-tty.setRawMode(true);
-process.stdin.on('keypress', function (char, key) {
-  if (key.ctrl) {
-    switch (key.name) {
-      case 'c':
-        process.exit();
-        break;
+if(tty.isatty(process.stdin)) {
+  process.stdin.resume();
+  tty.setRawMode(true);
+  process.stdin.on('keypress', function (char, key) {
+    if (key.ctrl) {
+      switch (key.name) {
+        case 'c':
+          process.exit();
+          break;
 
-      case 'r':
-        debug('\033[97mctrl + r\033[90m detected - reloading');
-        srv.reload();
-        break;
+        case 'r':
+          debug('\033[97mctrl + r\033[90m detected - reloading');
+          srv.reload();
+          break;
+      }
     }
-  }
-});
+  });
+}
 
 /**
  * Watch.
