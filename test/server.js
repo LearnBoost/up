@@ -20,6 +20,15 @@ app.get('/', function (req, res) {
 });
 
 /**
+ * Socket.io mock route.
+ */
+
+app.get('/socket.io/*', function (req, res) {
+  res.send({ pid: process.pid });
+});
+
+
+/**
  * Exports.
  */
 
