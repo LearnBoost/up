@@ -1,5 +1,5 @@
 
-TESTS = test/up.js
+TESTS = test/up.js test/sticky.js
 REPORTER = dot
 
 test:
