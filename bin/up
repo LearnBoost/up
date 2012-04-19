@@ -247,7 +247,7 @@ if (undefined != program.watch) {
 
   function watch (files, fn) {
     files.forEach(function (file) {
-      fs.watch(file, options, function (event, filename) {
+      fs.watch(file, function (event, filename) {
         fn(filename);
       });
     });
