@@ -169,24 +169,35 @@ process.on('SIGUSR2', function () {
 });
 
 /**
+ * Use the preferred "raw mode" API depending on the node version.
+ */
+
+function raw (mode) {
+  if (typeof process.stdin.setRawMode === 'function') {
+    process.stdin.setRawMode(mode);
+  } else {
+    tty.setRawMode(mode);
+  }
+}
+
+/**
  * Listen on control+r
  */
 
-if(tty.isatty(process.stdin)) {
+if (tty.isatty(0)) {
   process.stdin.resume();
-  tty.setRawMode(true);
-  process.stdin.on('keypress', function (char, key) {
-    if (key.ctrl) {
-      switch (key.name) {
-        case 'c':
-          process.exit();
-          break;
+  raw(true);
+  process.stdin.on('data', function (b) {
+    var key = b.toString('utf8');
+    switch (key) {
+      case '\u0003': // Ctrl+C
+        process.exit();
+        break;
 
-        case 'r':
-          debug('\033[97mctrl + r\033[90m detected - reloading');
-          srv.reload();
-          break;
-      }
+      case '\u0012': // Ctrl+R
+        debug('\033[97mctrl + r\033[90m detected - reloading');
+        srv.reload();
+        break;
     }
   });
 }
