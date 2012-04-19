@@ -10,6 +10,7 @@ var up = require('../lib/up')
   , request = require('superagent')
   , child_process = require('child_process')
   , Distributor = require('distribute')
+  , os = require('os')
 
 /**
  * Suite.
@@ -158,8 +159,14 @@ describe('up', function () {
         expect(alive(pid)).to.be(true);
 
         // kill master
-        proc.kill('SIGHUP');
-
+        switch (os.platform()) {
+          case 'win32':
+            this.proc.kill();
+            break;
+          deafult:
+            this.proc.kill('SIGHUP');
+        }
+        
         // since the ping interval is set to 15ms, we try in 30
         setTimeout(function () {
           expect(alive(pid)).to.be(false);

@@ -245,11 +245,10 @@ if (undefined != program.watch) {
    * @api private
    */
 
-  function watch (files, fn){
-    var options = { interval: 100 };
+  function watch (files, fn) {
     files.forEach(function (file) {
-      fs.watchFile(file, options, function (curr, prev) {
-        if (prev.mtime < curr.mtime) fn(file);
+      fs.watch(file, options, function (event, filename) {
+        fn(filename);
       });
     });
   };
