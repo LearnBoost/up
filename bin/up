@@ -35,7 +35,8 @@ var cpus = require('os').cpus().length;
 program
   .version(up.version)
   .usage('[options] <file>')
-  .option('-p, --port <port>', 'Port to listen on.', 3000)
+  .option('-p, --port <port>', 'Port to listen on.')
+  .option('-s, --socketpath <socketpath>', 'Socket path to listen on.')
   .option('-f, --pidfile <pidfile>', 'Write port to pidfile')
   .option('-w, --watch', 'Watch the module directory for changes.')
   .option('-r, --require <file>', 'Module to require from each worker.')
@@ -103,7 +104,18 @@ if (!(server instanceof http.Server)) {
 
 var port;
 
-if (null != program.port) {
+if (null != program.port && null != program.socketpath) {
+  error('\n Cannot specify both port and socketpath');
+}
+
+
+if (null == program.port) {
+  if (null == program.socketpath) {
+    port = 3000;
+  } else {
+    port = program.socketpath;
+  }
+} else {
   port = Number(program.port);
 
   if (!port || isNaN(port)) {
@@ -137,11 +149,11 @@ if (null != workerTimeout && isNaN(ms(workerTimeout))) {
  * Start!
  */
 
-debug('starting cluster with %d workers on port %d', numWorkers, port);
+debug('starting cluster with %d workers on port %s', numWorkers, port);
 debug('`\033[97mkill -s SIGUSR2 %d\033[90m` or \033[97mctrl + r\033[90m'
   + ' to load new code', process.pid);
 
-var httpServer = http.Server().listen(program.port)
+var httpServer = http.Server().listen(port)
   , srv = up(httpServer, file, {
         numWorkers: numWorkers
       , workerTimeout: workerTimeout
