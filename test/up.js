@@ -158,8 +158,14 @@ describe('up', function () {
         expect(alive(pid)).to.be(true);
 
         // kill master
-        proc.kill('SIGHUP');
-
+        switch (process.platform) {
+          case 'win32':
+            this.proc.kill();
+            break;
+          deafult:
+            this.proc.kill('SIGHUP');
+        }
+        
         // since the ping interval is set to 15ms, we try in 30
         setTimeout(function () {
           expect(alive(pid)).to.be(false);
