@@ -239,7 +239,7 @@ if (undefined != program.watch) {
         p = path.join(dir, p);
         if (fs.statSync(p).isDirectory()) {
           files(p, ret);
-        } else if (p.match(/\.js$|\.coffee|\.json$/)) {
+        } else if (p.match(/\.js$|\.coffee$|\.json$/)) {
           ret.push(p);
         }
       });
