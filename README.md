@@ -106,6 +106,7 @@ parameters:
 - options (`Object`)
   - `numWorkers`: (`Number`|`String`): see `--workers` above.
   - `workerTimeout`: (`Number`|`String`): see `--timeout` above.
+  - `assumeReady`: (`Boolean`): see Worker readiness below.
 
 ## Middleware
 
@@ -146,6 +147,22 @@ minutes in production. This means that if a user was uploading a file, his
 request will be processed without interruptions.
 5. As other workers bind and become available, they join the round-robin
 round.
+
+### Worker readiness
+
+By default up assume that new workers are ready for new connections,
+immediately after they have been required. This can be changed by setting
+`assumeReady` to `false`, on the `options` object when initializing
+the up server through the JavaScript API.
+
+The worker then needs to tell up, when it's ready, like this:
+```js
+var up = require('up');
+// Dummy async event
+setTimeout(function(){
+	up.ready();
+}, 1000);
+```
 
 ## Credits
 
