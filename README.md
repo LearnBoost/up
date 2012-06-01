@@ -79,6 +79,10 @@ The `up` command accepts the following options:
   - Strings like `'10s'` are accepted.
   - Defaults to `'10m'`, or `'500ms'` if `NODE_ENV` is `development`.
 
+- `-k`/`--keepalive`
+
+  - start a new worker after one dies unexpectedly
+
 - `-f`/`--pidfile`
 
   - A filename to write the pid to
@@ -114,6 +118,7 @@ parameters:
   - `workerTimeout`: (`Number`|`String`): see `--timeout` above.
   - `title`: (`String`): see `--title` above.
   - `assumeReady`: (`Boolean`): see Worker readiness below.
+  - `keepAlive`: (`Boolean`): see `--keepalive` above.
 
 ## Middleware
 

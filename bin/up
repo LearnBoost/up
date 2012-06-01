@@ -43,6 +43,7 @@ program
   .option('-n, --number <workers>', 'Number of workers to spawn.'
     , 'development' == process.env.NODE_ENV ? 1 : cpus)
   .option('-t, --timeout [ms]', 'Worker timeout.')
+  .option('-k, --keepalive', 'Restart failed workers.')
 
 /**
  * Capture requires.
@@ -135,6 +136,12 @@ if (null != workerTimeout && isNaN(ms(workerTimeout))) {
 }
 
 /**
+ * Parse keepalive
+ */
+
+var keepAlive = program.keepalive;
+
+/**
  * Start!
  */
 
@@ -148,6 +155,7 @@ var httpServer = http.Server().listen(program.port)
       , workerTimeout: workerTimeout
       , requires: requires
       , title: program.title
+      , keepAlive: keepAlive
     })
 
 /**
