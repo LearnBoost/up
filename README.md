@@ -119,6 +119,9 @@ parameters:
   - `title`: (`String`): see `--title` above.
   - `assumeReady`: (`Boolean`): see Worker readiness below.
   - `keepAlive`: (`Boolean`): see `--keepalive` above.
+  - `minExpectedLifetime`: (`Number`|`String`): Number of ms a worker is
+    expected to live. Don't auto-respawn if a worker dies earlier. Strings
+    like `'10s'` are accepted. Defaults to `'20s'`.
 
 ## Middleware
 
