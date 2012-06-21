@@ -1,4 +1,18 @@
 
+0.2.0 / 2012-06-20
+==================
+
+  * Ensure all workers are gone before spawning if the timeout is zero.
+  * Add support for watching json changes and use `file` instead of `filename`.
+  * Merge pull request #27 from mugami-ast/connect2-fix
+  * Use the preferred "raw mode" API depending on the node version.
+  * Don't use the 'keypress' event.
+  * Windows compatibility
+  * worker: call address() on the callback context instead of the server for Connect 2.0 compatability
+  * Add sticky worker routing for socket.io xhr-polling, jsonp-polling, htmlfile calls
+  * Add --pidfile to the README.
+  * Add an option to write a file with the pid.
+
 0.1.7 / 2012-02-28
 ==================
 
