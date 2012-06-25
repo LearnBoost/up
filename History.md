@@ -1,4 +1,12 @@
 
+0.2.1 / 2012-06-25
+==================
+
+  * Package: update commander to v0.6.1
+  * Restrict the suicide test to only spawn 1 worker
+  * Regain non-windows compatibility
+  * Revert "pegged express devDependency version because of breaking change in 3.0.0alpha1"
+
 0.2.0 / 2012-06-20
 ==================
 
