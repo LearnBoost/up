@@ -180,4 +180,28 @@ describe('up', function () {
     }
   });
 
+  function testAssumeReady(done, async) {
+    var httpServer = http.Server().listen()
+      , srv = up(httpServer, __dirname + '/ready', { numWorkers: 1, assumeReady: !async })
+      , worker, ready = false;
+
+    expect(srv.spawning.length).to.be(1);
+    worker = srv.spawning[0];
+    worker.proc.on('message', function(msg){
+      if (msg.type !== 'test, im ready') return;
+      ready = true;
+    });
+    srv.on('spawn', function () {
+      expect(ready).to.be(async);
+      done();
+    });
+  }
+  it('should support asynchronous loading workers', function (done) {
+    testAssumeReady(done, true);
+  });
+  it('should support synchronous loading workers by default', function (done) {
+    testAssumeReady(done, false);
+  });
+
+
 });
