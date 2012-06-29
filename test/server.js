@@ -27,6 +27,17 @@ app.get('/socket.io/*', function (req, res) {
   res.send({ pid: process.pid });
 });
 
+/**
+ * Simulate an error that does not breach uptime threshold.
+ */
+
+app.get('/throw', function (req, res) {
+	setTimeout(function () {
+		throw new Error('ahhhh');
+	}, 10);
+	res.send({ ok: 'ok' });
+});
+
 
 /**
  * Exports.
