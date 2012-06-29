@@ -22,6 +22,7 @@ when files change in the working directory.
 - Easy-to-use CLI interface for development with automatic reloading
   upon file changes.
 - Gracefully handles reloads with syntax errors during development.
+- Auto-spawns new workers upon unexepected exits without cyclical respawn disasters.
 - Built on [distribute](http://github.com/learnboost/distribute).
 
 ## Setup
@@ -89,6 +90,17 @@ The `up` command accepts the following options:
   - A value to give `process.title`.
   - Defaults to `up`.
   - The value will be appended with `master` or `worker` (e.g "up master", "up worker").
+
+- `u`/`--uptime`
+
+  - The mininum update a worker process should live for in order to be replaced by another worker. It will otherwise be considered a cyclical restart.
+  - Defaults to 5000 ms.
+
+- `-d`/`--directory`
+
+  - The working directory to change into prior to starting the master process.
+  - Defaults to the current working directory.
+  - Note that this will effect the pathing used for `--pidfile` and `<file>`.
 
 ### B) JavaScript API
 
@@ -170,6 +182,10 @@ setTimeout(function(){
 	up.ready();
 }, 1000);
 ```
+
+### Signals
+
+Comming soon...
 
 ## Credits
 
