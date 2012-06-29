@@ -16,7 +16,7 @@ var app = express.createServer();
  */
 
 app.get('/', function (req, res) {
-  res.send({ pid: process.pid });
+  res.send({ pid: process.pid, title: process.title });
 });
 
 /**

@@ -36,6 +36,7 @@ program
   .version(up.version)
   .usage('[options] <file>')
   .option('-p, --port <port>', 'Port to listen on.', 3000)
+  .option('-T, --title <title>', 'Process title.', 'up')
   .option('-f, --pidfile <pidfile>', 'Write port to pidfile')
   .option('-w, --watch', 'Watch the module directory for changes.')
   .option('-r, --require <file>', 'Module to require from each worker.')
@@ -146,6 +147,7 @@ var httpServer = http.Server().listen(program.port)
         numWorkers: numWorkers
       , workerTimeout: workerTimeout
       , requires: requires
+      , title: program.title
     })
 
 /**

@@ -52,7 +52,7 @@ The `up` command accepts the following options:
 
 - `-p`/`--port`
 
-  - the port to listen on. Not required if the module already `listen`s.
+  - The port to listen on. Not required if the module already `listen`s.
   - Defaults to `3000`.
 
 - `-w`/`--watch`
@@ -67,7 +67,7 @@ The `up` command accepts the following options:
 
 - `-n`/`--number`
 
-  - number of workers. It gets evaluated with
+  - Number of workers. It gets evaluated with
     [eq.js](https://gist.github.com/1590954).
   - You can optionally use the `cpus` variable. eg: `cpus + 2`.
   - You can use all the `Math` methods. eg: `round(cpus / 2)`.
@@ -75,14 +75,20 @@ The `up` command accepts the following options:
 
 - `-t`/`--timeout`
 
-  - number of ms after which a worker is killed once it becomes inactive.
+  - Number of ms after which a worker is killed once it becomes inactive.
   - Strings like `'10s'` are accepted.
   - Defaults to `'10m'`, or `'500ms'` if `NODE_ENV` is `development`.
 
 - `-f`/`--pidfile`
 
-  - a filename to write the pid to
+  - A filename to write the pid to
   - If specified, restarts can be achieved with: "kill -s SIGUSR2 `cat pidfile.txt`"
+
+- `-T`/`--title`
+
+  - A value to give `process.title`.
+  - Defaults to `up`.
+  - The value will be appended with `master` or `worker` (e.g "up master", "up worker").
 
 ### B) JavaScript API
 
@@ -106,6 +112,7 @@ parameters:
 - options (`Object`)
   - `numWorkers`: (`Number`|`String`): see `--workers` above.
   - `workerTimeout`: (`Number`|`String`): see `--timeout` above.
+  - `title`: (`String`): see `--title` above.
   - `assumeReady`: (`Boolean`): see Worker readiness below.
 
 ## Middleware
