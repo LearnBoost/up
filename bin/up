@@ -258,7 +258,9 @@ if (tty.isatty(0)) {
     var key = b.toString('utf8');
     switch (key) {
       case '\u0003': // Ctrl+C
-        srv.exit();
+        srv.exit(function () {
+          process.exit(0);
+        });
         break;
 
       case '\u0012': // Ctrl+R
