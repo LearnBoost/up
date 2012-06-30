@@ -180,6 +180,14 @@ if (program.pidfile) {
 }
 
 /**
+ * Shutdown workers gracefully but keep the master going.
+ */
+
+signal('SIGUSR1', 'shutdown workers', function () {
+  srv.shutdownWorkers();
+});
+
+/**
  * Reload load workers gracefully.
  */
 
