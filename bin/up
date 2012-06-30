@@ -213,16 +213,6 @@ signal('SIGQUIT', 'shutdown workers and master', function () {
   });
 });
 
-
-/**
- * Shutdown workers gracefully, but keep the master up.
- */
-
-signal('SIGWINCH', 'shutdown workers', function () {
-  srv.shutdown();
-});
-
-
 /**
  * Hard shutdown workers and master.
  */
