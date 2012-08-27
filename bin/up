@@ -44,7 +44,7 @@ program
     , 'development' == process.env.NODE_ENV ? 1 : cpus)
   .option('-t, --timeout [ms]', 'Worker timeout.')
   .option('-u, --uptime [ms]', 'Minimum worker uptime for exit replacement.')
-  .option('-d, --directory <directory>', 'Working dictory', path.resolve);
+  .option('-C, --cwd <directory>', 'Change working directory.', path.resolve);
 
 /**
  * Capture requires.
