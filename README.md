@@ -96,7 +96,7 @@ The `up` command accepts the following options:
   - The mininum update a worker process should live for in order to be replaced by another worker. It will otherwise be considered a cyclical restart.
   - Defaults to 5000 ms.
 
-- `-d`/`--directory`
+- `-C`/`--cwd`
 
   - The working directory to change into prior to starting the master process.
   - Defaults to the current working directory.
@@ -182,10 +182,6 @@ setTimeout(function(){
 	up.ready();
 }, 1000);
 ```
-
-### Signals
-
-Comming soon...
 
 ## Credits
 
