@@ -43,6 +43,8 @@ program
   .option('-n, --number <workers>', 'Number of workers to spawn.'
     , 'development' == process.env.NODE_ENV ? 1 : cpus)
   .option('-t, --timeout [ms]', 'Worker timeout.')
+  .option('-u, --uptime [ms]', 'Minimum worker uptime for exit replacement.')
+  .option('-C, --cwd <directory>', 'Change working directory.', path.resolve);
 
 /**
  * Capture requires.
@@ -59,6 +61,20 @@ program.on('require', function (file) {
  */
 
 program.parse(process.argv);
+
+/**
+ * Change to the optional working directory.
+ */
+
+if (program.directory) {
+  try {
+    process.chdir(program.directory);
+    debug('working directory set %s', program.directory);
+  } catch (e) {
+    error('\n  Error changing working directory to "%s".\n  %s\n'
+      , program.directory, e.stack);
+  }
+}
 
 /**
  * Helper function to exit with an error.
@@ -148,11 +164,13 @@ var httpServer = http.Server().listen(program.port)
       , workerTimeout: workerTimeout
       , requires: requires
       , title: program.title
+      , uptimeThreshold: program.uptime
     })
 
 /**
  * Write pidfile
  */
+
 if (program.pidfile) {
   fs.writeFile(program.pidfile, process.pid, function(err) {
     if (err) {
@@ -162,13 +180,68 @@ if (program.pidfile) {
 }
 
 /**
- * Listen on SIGUSR2 signal.
+ * Shutdown workers gracefully but keep the master going.
  */
 
-process.on('SIGUSR2', function () {
-  debug('\033[97mSIGUSR2\033[90m signal detected - reloading');
+signal('SIGUSR1', 'shutdown workers', function () {
+  srv.shutdownWorkers();
+});
+
+/**
+ * Reload load workers gracefully.
+ */
+
+signal('SIGUSR2', 'reload', function () {
   srv.reload();
 });
+
+/**
+ * Spawn a new worker.
+ */
+
+signal('SIGTTIN', 'add worker', function () {
+  srv.spawnWorker();
+});
+
+/**
+ * Remove a worker.
+ */
+
+signal('SIGTTOU', 'remove worker', function () {
+  srv.removeWorker();
+});
+
+/**
+ * Shutdown workers and master gracefully.
+ */
+
+signal('SIGQUIT', 'shutdown workers and master', function () {
+  srv.shutdown(function () {
+    process.exit(0);
+  });
+});
+
+/**
+ * Hard shutdown workers and master.
+ */
+
+signal('SIGTERM', 'hard shutdown master and workers', function () {
+  srv.exit(function () {
+    process.exit(0);
+  });
+});
+
+/**
+ * Helper function for signals.
+ */
+
+function signal (sig, msg, fn) {
+  process.on(sig, function() {
+    debug('\033[97m' + sig +'\033[90m signal detected - ' + msg);
+    fn && fn.apply(process, arguments);
+  });
+}
+
 
 /**
  * Use the preferred "raw mode" API depending on the node version.
@@ -193,7 +266,9 @@ if (tty.isatty(0)) {
     var key = b.toString('utf8');
     switch (key) {
       case '\u0003': // Ctrl+C
-        process.exit();
+        srv.exit(function () {
+          process.exit(0);
+        });
         break;
 
       case '\u0012': // Ctrl+R

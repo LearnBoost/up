@@ -212,5 +212,58 @@ describe('up', function () {
     testAssumeReady(done, false);
   });
 
+  it('should respawn on worker exit when below uptime threshold', function (done) {
+    var httpServer = http.Server().listen(6004)
+      , uptimeThreshold = 50
+      , srv = up(httpServer, __dirname + '/server', { numWorkers: 1, uptimeThreshold: uptimeThreshold })
+      , terminated = 0
+      , spawned = 0;
+
+    srv.on('terminate', function (w) {
+      terminated += 1;
+      expect(w.exitCode).to.equal(1);
+      expect(srv.spawning.length).to.equal(1);
+    });
+
+    srv.on('spawn', function listener (w1) {
+      spawned += 1;
+      srv.removeListener('spawn', listener);
+
+      setTimeout(function () {
+        request.get('http://localhost:6004/throw', function (res) {
+          expect(res.body.ok).to.equal('ok');
+        });
+      }, uptimeThreshold);
+
+      srv.on('spawn', function (w2) {
+        spawned += 1;
+        expect(terminated).to.equal(1);
+        expect(spawned).to.equal(2);
+        expect(w1.pid).to.not.equal(w2.pid);
+        expect(srv.workers.length).to.equal(1);
+        done();
+      });
+
+    });
+  });
+
+  it('should prevent cyclical respawning', function (done) {
+    var httpServer = http.Server().listen(6005)
+      , uptimeThreshold = 5000
+      , srv = up(httpServer, __dirname + '/server', { numWorkers: 1, uptimeThreshold: uptimeThreshold });
+
+    srv.on('terminate', function (w) {
+      expect(w.exitCode).to.equal(1);
+      expect(srv.spawning.length).to.equal(0);
+      expect(srv.workers.length).to.equal(0);
+      done();
+    });
+
+    request.get('http://localhost:6005/throw', function (res) {
+      expect(res.body.ok).to.equal('ok');
+    });
+
+  });
+
 
 });
