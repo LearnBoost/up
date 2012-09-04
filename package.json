@@ -20,4 +20,7 @@
       , "express": "*"
       , "superagent": "*"
     }
+  , "scripts": {
+        "test": "./node_modules/mocha/bin/mocha test/*.test.js"
+    }
 }
