@@ -87,6 +87,9 @@ if ('/' != file[0]) file = process.cwd() + '/' + file;
 
 // verify we can require
 try {
+  for (var i = 0, l = requires.length; i < l; i++) {
+    require(requires[i]);
+  }
   server = require(file);
 } catch (e) {
   error('\n  Error requiring supplied module "%s".\n  %s\n'
