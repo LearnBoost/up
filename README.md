@@ -65,7 +65,7 @@ The `up` command accepts the following options:
 
   - Specifies a module to require from each worker.
   - Can be used multiple times.
-  - Tranpilers such as CoffeeScript can be supported with `--require coffee-script`
+  - Tranpilers such as CoffeeScript can be supported with `--require|-r coffee-script`
 
 - `-n`/`--number`
 
