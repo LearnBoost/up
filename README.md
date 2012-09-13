@@ -23,6 +23,7 @@ when files change in the working directory.
   upon file changes.
 - Gracefully handles reloads with syntax errors during development.
 - Built on [distribute](http://github.com/learnboost/distribute).
+- Supports transpilers such as CoffeeScript.
 
 ## Setup
 
@@ -64,6 +65,7 @@ The `up` command accepts the following options:
 
   - Specifies a module to require from each worker.
   - Can be used multiple times.
+  - Tranpilers such as CoffeeScript can be supported with `--require|-r coffee-script`
 
 - `-n`/`--number`
 
