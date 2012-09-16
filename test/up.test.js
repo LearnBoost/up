@@ -127,14 +127,26 @@ describe('up', function () {
 
               srv.once('spawn', function () {
                 request.get('http://localhost:6002', function (res) {
-                  expect(res.body.pid).to.not.equal(pid1);
-                  pid1 = res.body.pid;
+                  var pid3 = res.body.pid;
+                  expect(pid3).to.not.equal(pid1);
+                  expect(pid3).to.not.equal(pid2);
 
                   request.get('http://localhost:6002', function (res) {
-                    expect(res.body.pid).to.not.equal(pid1);
-                    expect(res.body.pid).to.not.equal(pid2);
-                    expect(reloadFired).to.be(true);
-                    done();
+                    var pid4 = res.body.pid;
+                    expect(pid4).to.not.equal(pid1);
+                    expect(pid4).to.not.equal(pid2);
+                    expect(pid4).to.not.equal(pid3);
+
+                    request.get('http://localhost:6002', function (res) {
+                      // confirm that the initial workers are not used when the
+                      // server gets back to the start of the list
+                      var pid5 = res.body.pid;
+                      expect(pid5).to.not.equal(pid1);
+                      expect(pid5).to.not.equal(pid2);
+
+                      expect(reloadFired).to.be(true);
+                      done();
+                    });
                   });
                 });
               });
