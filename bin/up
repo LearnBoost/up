@@ -228,10 +228,8 @@ if (undefined != program.watch) {
    */
 
   if (undefined != program.ignore) {
-    console.log(program.ignore);
     var ignore = program.ignore.split(",");
     ignore = ['node_modules', '.git'].concat(ignore);
-    console.log(ignore);
   } else {
     var ignore = ['node_modules', '.git'];
   }
