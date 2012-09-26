@@ -39,6 +39,7 @@ program
   .option('-T, --title <title>', 'Process title.', 'up')
   .option('-f, --pidfile <pidfile>', 'Write port to pidfile')
   .option('-w, --watch', 'Watch the module directory for changes.')
+  .option('-i, --ignore <paths>', 'Ignore files when watching for changes.')
   .option('-r, --require <file>', 'Module to require from each worker.')
   .option('-n, --number <workers>', 'Number of workers to spawn.'
     , 'development' == process.env.NODE_ENV ? 1 : cpus)
@@ -226,7 +227,14 @@ if (undefined != program.watch) {
    * Ignored directories.
    */
 
-  var ignore = ['node_modules', '.git'];
+  if (undefined != program.ignore) {
+    console.log(program.ignore);
+    var ignore = program.ignore.split(",");
+    ignore = ['node_modules', '.git'].concat(ignore);
+    console.log(ignore);
+  } else {
+    var ignore = ['node_modules', '.git'];
+  }
 
   /**
    * Ignored files.
