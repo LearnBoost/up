@@ -61,6 +61,12 @@ The `up` command accepts the following options:
   - Whether to watch for changes.
   - Watches the working directory for changes.
 
+- `-i`/`--ignore` `<paths>`
+
+  - When using `--watch`, define paths to ignore (comma separated)
+  - `.git,node_modules` are ignored by default and are added to your ignored paths
+  - eg: `--ignore public,vendor`
+
 - `-r`/`--require` `<mod>`
 
   - Specifies a module to require from each worker.
