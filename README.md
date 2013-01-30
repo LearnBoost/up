@@ -121,6 +121,9 @@ parameters:
   - `title`: (`String`): see `--title` above.
   - `assumeReady`: (`Boolean`): see Worker readiness below.
   - `keepAlive`: (`Boolean`): see `--keepalive` above.
+  - `backoffRespawns`: null to disable exponential backoff respawns.  -1 to disable maximum respawns, and any positive int to set a limit on attempted respawns
+  - `backoffDelay`: delay to first respawn attempt in milliseconds
+  - `backoffMaxDelay`: the maximum delay between respawn attempts in milliseconds
   - `minExpectedLifetime`: (`Number`|`String`): Number of ms a worker is
     expected to live. Don't auto-respawn if a worker dies earlier. Strings
     like `'10s'` are accepted. Defaults to `'20s'`.
