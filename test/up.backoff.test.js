@@ -373,4 +373,29 @@ describe('up', function () {
     });
   });
 
+  it('should work emit unsuccessful events if first round of workers fail before they should', function (done) {
+    var httpServer = http.Server().listen()
+      , opts = { numWorkers: 1, keepAlive: true, minExpectedLifetime: '50', backoffRespawns:-1, backoffInitDelay:10, backoffMaxDelay:50 }
+      , srv = up(httpServer, __dirname + '/server-fail', opts)
+      , orgPid = null;
+    srv.once('spawn', function () {
+      expect(srv.workers).to.have.length(1);
+      orgPid = srv.workers[0].pid
+      setTimeout(function () {
+        process.kill(orgPid, 'SIGKILL');
+        setTimeout(function ()  {
+          expect(srv.workers).to.have.length(1);
+          expect(srv.workers[0].pid).to.not.equal(orgPid);
+          done();
+        }, 300)  // give it time to die and respawn
+      }, 75)  // greater than minExpectedLifetime
+    });
+    srv.on('respawn', function() {
+      throw new Error('Respawn should not be hit because worker fails too young');
+    });
+    srv.on('unsuccessful', function() {
+      done();
+    });
+  });
+
 });
