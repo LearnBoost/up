@@ -11,6 +11,10 @@ var up = require('../lib/up')
   , child_process = require('child_process')
   , Distributor = require('distribute')
 
+if (process.platform == 'darwin') {
+  console.log('Warning: process.title is known not to work on mac.  These tests will be skipped.  See https://github.com/joyent/node/issues/3687');
+}
+
 /**
  * Suite.
  */
@@ -22,10 +26,12 @@ describe('up', function () {
     expect(srv).to.be.a(Distributor);
   });
 
-  it('should set the master process title', function () {
-    var srv = up(http.Server(), __dirname + '/server', { title: 'learnboost' });
-    expect(process.title).to.equal('learnboost master');
-  });
+  if (process.platform != 'darwin') {
+    it('should set the master process title', function () {
+      var srv = up(http.Server(), __dirname + '/server', { title: 'learnboost' });
+      expect(process.title).to.equal('learnboost master');
+    });
+  }
 
   it('should load the workers', function (done) {
     var httpServer = http.Server().listen(6000, onListen)
@@ -37,7 +43,9 @@ describe('up', function () {
         var pid = res.body.pid;
         var title = res.body.title;
 
-        expect(title).to.equal('learnboost worker');
+        if (process.platform != 'darwin') {
+          expect(title).to.equal('learnboost worker');
+        }
         expect(pid).to.be.a('number');
 
         done();

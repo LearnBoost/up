@@ -9,7 +9,7 @@ var express = require('express')
  * Initialize server
  */
 
-var app = express.createServer();
+var app = express();
 
 /**
  * Default route.
