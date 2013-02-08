@@ -413,4 +413,30 @@ describe('up', function () {
     });
   });
 
+  it('should not emit unsuccessful events and workers should respawn if min lifetime is 0 immediate with backoff', function (done) {
+    var httpServer = http.Server().listen()
+      , opts = { numWorkers: 1, keepAlive: true, minExpectedLifetime: '0', backoffRespawns:-1, backoffInitDelay:10, backoffMaxDelay:50 }
+      , srv = up(httpServer, __dirname + '/server-fail', opts)
+      , orgPid = null;
+    srv.once('respawn', function() {
+      setTimeout(function() { done(); }, 500); // give everything time to occur
+    });
+    srv.on('unsuccessful', function() {
+      throw new Error('Should not have emitted unsuccessful');
+    });
+  });
+
+  it('should not emit unsuccessful events and workers should respawn if min lifetime is 0 async with backoff', function (done) {
+    var httpServer = http.Server().listen()
+      , opts = { numWorkers: 1, keepAlive: true, minExpectedLifetime: '0', backoffRespawns:-1, backoffInitDelay:10, backoffMaxDelay:50 }
+      , srv = up(httpServer, __dirname + '/server-asyncfail', opts)
+      , orgPid = null;
+    srv.once('respawn', function() {
+      setTimeout(function() { done(); }, 500); // give everything time to occur
+    });
+    srv.on('unsuccessful', function() {
+      throw new Error('Should not have emitted unsuccessful');
+    });
+  });
+
 });
