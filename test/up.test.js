@@ -251,28 +251,42 @@ describe('up', function () {
     });
   });
 
-  it('should work emit unsuccessful events if first round of workers fail before they should', function (done) {
+  it('should emit unsuccessful events and not respawn if first round of workers fails immediately', function (done) {
     var httpServer = http.Server().listen()
       , opts = { numWorkers: 1, keepAlive: true, minExpectedLifetime: '50' }
       , srv = up(httpServer, __dirname + '/server-fail', opts)
       , orgPid = null;
-    srv.once('spawn', function () {
-      expect(srv.workers).to.have.length(1);
-      orgPid = srv.workers[0].pid
-      setTimeout(function () {
-        process.kill(orgPid, 'SIGKILL');
-        setTimeout(function ()  {
-          expect(srv.workers).to.have.length(1);
-          expect(srv.workers[0].pid).to.not.equal(orgPid);
-          done();
-        }, 300)  // give it time to die and respawn
-      }, 75)  // greater than minExpectedLifetime
-    });
     srv.on('respawn', function() {
       throw new Error('Respawn should not be hit because worker fails too young');
     });
     srv.on('unsuccessful', function() {
-      done();
+      setTimeout(function() { done(); }, 500); // give everything time to occur
+    });
+  });
+
+  it('should emit unsuccessful events and not respawn if first round of workers fails asynchronously', function (done) {
+    var httpServer = http.Server().listen()
+      , opts = { numWorkers: 1, keepAlive: true, minExpectedLifetime: '300' } // minExpectedLifetime larger than 100 -- the asyncfail delay
+      , srv = up(httpServer, __dirname + '/server-asyncfail', opts)
+      , orgPid = null;
+    srv.on('respawn', function() {
+      throw new Error('Respawn should not be hit because worker fails too young');
+    });
+    srv.on('unsuccessful', function() {
+      setTimeout(function() { done(); }, 500); // give everything time to occur
+    });
+  });
+
+  it('should not emit unsuccessful events and respawn worker if first round of workers fails after min lifetime met', function (done) {
+    var httpServer = http.Server().listen()
+      , opts = { numWorkers: 1, keepAlive: true, minExpectedLifetime: '50' }
+      , srv = up(httpServer, __dirname + '/server-asyncfail', opts)
+      , orgPid = null;
+    srv.on('respawn', function() {
+      setTimeout(function() { done(); }, 500); // give everything time to occur
+    });
+    srv.on('unsuccessful', function() {
+      throw new Error('Should not have emitted unsuccessful');
     });
   });
 
