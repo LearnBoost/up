@@ -249,6 +249,9 @@ describe('up', function () {
         }, 300)  // give it time to die and respawn
       }, 75)  // greater than minExpectedLifetime
     });
+    srv.on('unsuccessful', function() {
+      throw new Error('Workers dying naturally should not emit unsuccessful');
+    });
   });
 
   it('should emit unsuccessful events and not respawn if first round of workers fails immediately', function (done) {
