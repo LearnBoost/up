@@ -1,26 +1,37 @@
 {
-    "name": "up"
-  , "description": "Zero downtime reloads for Node HTTP(S) servers."
-  , "tags": ["cluster", "reload", "process", "monitor", "graceful", "restart"]
-  , "homepage": "https://github.com/learnboost/up"
-  , "version": "0.2.1"
-  , "bin": { "up": "./bin/up" }
-  , "main": "./lib/up"
-  , "engines": { "node": ">= 0.6.0" }
-  , "dependencies": {
-        "eq": "0.1.0"
-      , "ms": "0.1.0"
-      , "debug": "0.1.0"
-      , "commander": "0.6.1"
-      , "distribute": "0.1.4"
-    }
-  , "devDependencies": {
-        "mocha": "*"
-      , "expect.js": "*"
-      , "express": "*"
-      , "superagent": "*"
-    }
-  , "scripts": {
-        "test": "./node_modules/mocha/bin/mocha test/*.test.js"
-    }
+  "name": "up",
+  "description": "Zero downtime reloads for Node HTTP(S) servers.",
+  "tags": [
+    "cluster",
+    "reload",
+    "process",
+    "monitor",
+    "graceful",
+    "restart"
+  ],
+  "homepage": "https://github.com/learnboost/up",
+  "version": "0.2.2",
+  "bin": {
+    "up": "./bin/up"
+  },
+  "main": "./lib/up",
+  "engines": {
+    "node": ">= 0.6.0"
+  },
+  "dependencies": {
+    "eq": "0.1.0",
+    "ms": "0.1.0",
+    "debug": "0.1.0",
+    "commander": "0.6.1",
+    "distribute": "0.1.4"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "expect.js": "*",
+    "express": "*",
+    "superagent": "*"
+  },
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha test/*.test.js"
+  }
 }
