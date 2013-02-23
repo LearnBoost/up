@@ -10,7 +10,7 @@
     "restart"
   ],
   "homepage": "https://github.com/learnboost/up",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "bin": {
     "up": "./bin/up"
   },
