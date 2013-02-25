@@ -44,6 +44,7 @@ program
     , 'development' == process.env.NODE_ENV ? 1 : cpus)
   .option('-t, --timeout [ms]', 'Worker timeout.')
   .option('-k, --keepalive', 'Restart failed workers.')
+  .option('-m, --manual-ready', 'Manual call require("up").ready() in code.')
 
 /**
  * Capture requires.
@@ -159,6 +160,7 @@ var httpServer = http.Server().listen(program.port)
       , requires: requires
       , title: program.title
       , keepAlive: keepAlive
+      , assumeReady: !program.manualReady
     })
 
 /**
