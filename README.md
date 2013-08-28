@@ -1,4 +1,3 @@
-
 # Up
 
 Zero-downtime reloads built on top of the
@@ -12,6 +11,8 @@ $ up --port 80 --watch my-http-server.js
 
 Will start `my-http-server.js` on port 80, then reload it with no downtime
 when files change in the working directory.
+
+**This project is deprecated!**
 
 ## Features
 
