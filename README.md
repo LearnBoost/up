@@ -1,3 +1,6 @@
+
+__NOTE__: up has been renamed in npm as "up-time" https://npmjs.org/package/up-time
+
 # Up
 
 Zero-downtime reloads built on top of the
