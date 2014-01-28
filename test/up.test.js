@@ -22,11 +22,6 @@ describe('up', function () {
     expect(srv).to.be.a(Distributor);
   });
 
-  it('should set the master process title', function () {
-    var srv = up(http.Server(), __dirname + '/server', { title: 'learnboost' });
-    expect(process.title).to.equal('learnboost master');
-  });
-
   it('should load the workers', function (done) {
     var httpServer = http.Server().listen(6000, onListen)
       , srv = up(httpServer, __dirname + '/server', { title: 'learnboost' })
@@ -35,11 +30,8 @@ describe('up', function () {
       if (err) return done(err);
       request.get('http://localhost:6000', function (res) {
         var pid = res.body.pid;
-        var title = res.body.title;
 
-        expect(title).to.equal('learnboost worker');
         expect(pid).to.be.a('number');
-
         done();
       });
     }
