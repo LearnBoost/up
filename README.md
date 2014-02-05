@@ -60,6 +60,11 @@ The `up` command accepts the following options:
   - The port to listen on. Not required if the module already `listen`s.
   - Defaults to `3000`.
 
+- `-s`/`--socketpath`
+
+  - The unix domain socket path to listen on. Not required if the module already `listen`s.
+  - Cannot be set, if `port` is specified.
+
 - `-w`/`--watch`
 
   - Whether to watch for changes.
