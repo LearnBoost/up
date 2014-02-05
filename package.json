@@ -12,6 +12,7 @@
       , "ms": "0.1.0"
       , "debug": "0.1.0"
       , "commander": "0.6.1"
+      , "backoff": "2.0.0"
       , "distribute": "0.1.4"
     }
   , "devDependencies": {

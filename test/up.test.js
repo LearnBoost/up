@@ -11,6 +11,10 @@ var up = require('../lib/up')
   , child_process = require('child_process')
   , Distributor = require('distribute')
 
+if (process.platform == 'darwin') {
+  console.log('Warning: process.title is known not to work on mac.  These tests will be skipped.  See https://github.com/joyent/node/issues/3687');
+}
+
 /**
  * Suite.
  */
@@ -22,10 +26,12 @@ describe('up', function () {
     expect(srv).to.be.a(Distributor);
   });
 
-  it('should set the master process title', function () {
-    var srv = up(http.Server(), __dirname + '/server', { title: 'learnboost' });
-    expect(process.title).to.equal('learnboost master');
-  });
+  if (process.platform != 'darwin') {
+    it('should set the master process title', function () {
+      var srv = up(http.Server(), __dirname + '/server', { title: 'learnboost' });
+      expect(process.title).to.equal('learnboost master');
+    });
+  }
 
   it('should load the workers', function (done) {
     var httpServer = http.Server().listen(6000, onListen)
@@ -37,7 +43,9 @@ describe('up', function () {
         var pid = res.body.pid;
         var title = res.body.title;
 
-        expect(title).to.equal('learnboost worker');
+        if (process.platform != 'darwin') {
+          expect(title).to.equal('learnboost worker');
+        }
         expect(pid).to.be.a('number');
 
         done();
@@ -240,6 +248,74 @@ describe('up', function () {
           done();
         }, 300)  // give it time to die and respawn
       }, 75)  // greater than minExpectedLifetime
+    });
+    srv.on('unsuccessful', function() {
+      throw new Error('Workers dying naturally should not emit unsuccessful');
+    });
+  });
+
+  it('should emit unsuccessful events and not respawn if first round of workers fails immediately', function (done) {
+    var httpServer = http.Server().listen()
+      , opts = { numWorkers: 1, keepAlive: true, minExpectedLifetime: '50' }
+      , srv = up(httpServer, __dirname + '/server-fail', opts)
+      , orgPid = null;
+    srv.on('respawn', function() {
+      throw new Error('Respawn should not be hit because worker fails too young');
+    });
+    srv.on('unsuccessful', function() {
+      setTimeout(function() { done(); }, 500); // give everything time to occur
+    });
+  });
+
+  it('should emit unsuccessful events and not respawn if first round of workers fails asynchronously', function (done) {
+    var httpServer = http.Server().listen()
+      , opts = { numWorkers: 1, keepAlive: true, minExpectedLifetime: '300' } // minExpectedLifetime larger than 100 -- the asyncfail delay
+      , srv = up(httpServer, __dirname + '/server-asyncfail', opts)
+      , orgPid = null;
+    srv.on('respawn', function() {
+      throw new Error('Respawn should not be hit because worker fails too young');
+    });
+    srv.on('unsuccessful', function() {
+      setTimeout(function() { done(); }, 500); // give everything time to occur
+    });
+  });
+
+  it('should not emit unsuccessful events and respawn worker if first round of workers fails after min lifetime met', function (done) {
+    var httpServer = http.Server().listen()
+      , opts = { numWorkers: 1, keepAlive: true, minExpectedLifetime: '50' }
+      , srv = up(httpServer, __dirname + '/server-asyncfail', opts)
+      , orgPid = null;
+    srv.on('respawn', function() {
+      setTimeout(function() { done(); }, 500); // give everything time to occur
+    });
+    srv.on('unsuccessful', function() {
+      throw new Error('Should not have emitted unsuccessful');
+    });
+  });
+
+  it('should not emit unsuccessful events and workers should be respawn if min lifetime is 0 immediate', function (done) {
+    var httpServer = http.Server().listen()
+      , opts = { numWorkers: 1, keepAlive: true, minExpectedLifetime: '0' }
+      , srv = up(httpServer, __dirname + '/server-fail', opts)
+      , orgPid = null;
+    srv.on('respawn', function() {
+      setTimeout(function() { done(); }, 500); // give everything time to occur
+    });
+    srv.on('unsuccessful', function() {
+      throw new Error('Should not have emitted unsuccessful');
+    });
+  });
+
+  it('should not emit unsuccessful events and workers should be respawn if min lifetime is 0 async', function (done) {
+    var httpServer = http.Server().listen()
+      , opts = { numWorkers: 1, keepAlive: true, minExpectedLifetime: '0' }
+      , srv = up(httpServer, __dirname + '/server-asyncfail', opts)
+      , orgPid = null;
+    srv.on('respawn', function() {
+      setTimeout(function() { done(); }, 500); // give everything time to occur
+    });
+    srv.on('unsuccessful', function() {
+      throw new Error('Should not have emitted unsuccessful');
     });
   });
 
