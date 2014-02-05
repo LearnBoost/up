@@ -44,6 +44,7 @@ program
     , 'development' == process.env.NODE_ENV ? 1 : cpus)
   .option('-t, --timeout [ms]', 'Worker timeout.')
   .option('-k, --keepalive', 'Restart failed workers.')
+  .option('-m, --manual-ready', 'Manual call require("up").ready() in code.')
 
 /**
  * Capture requires.
@@ -149,7 +150,8 @@ var keepAlive = program.keepalive;
  */
 
 debug('starting cluster with %d workers on port %d', numWorkers, port);
-debug('`\033[97mkill -s SIGUSR2 %d\033[90m` or \033[97mctrl + r\033[90m'
+debug('`\033[97mkill -s SIGUSR2 %d\033[90m` or'
+  + '`\033[97mkill -s SIGHUP %d\033[90m` or \033[97mctrl + r\033[90m'
   + ' to load new code', process.pid);
 
 var httpServer = http.Server().listen(program.port)
@@ -159,6 +161,7 @@ var httpServer = http.Server().listen(program.port)
       , requires: requires
       , title: program.title
       , keepAlive: keepAlive
+      , assumeReady: !program.manualReady
     })
 
 /**
@@ -171,6 +174,15 @@ if (program.pidfile) {
     }
   });
 }
+
+/**
+ * Listen on SIGHUP signal.
+ */
+
+process.on('SIGHUP', function () {
+  debug('\033[97mSIGHUP\033[90m signal detected - reloading');
+  srv.reload();
+});
 
 /**
  * Listen on SIGUSR2 signal.
